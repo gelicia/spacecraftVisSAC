@@ -11,12 +11,20 @@
   This work is licensed under a Creative Commons License http://creativecommons.org/licenses/by/1.0/
   -->
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link href="css/ui-lightness/jquery-ui-1.10.2.custom.css" rel="stylesheet">
     <script src="js/lib/lodash.min.js"></script>
     <script src="js/lib/miso.ds.deps.ie.min.0.4.0.js"></script>
     <script src="js/lib/d3.v3.min.js"></script>
     <script src="js/lib/d3.geo.projection.v0.min.js"></script>
     <script src="js/lib/jquery-2.0.0.min.js"></script>
+    <script src="js/lib/jquery-ui-1.10.2.custom.min.js"></script>
     <script type = "text/javascript" src="js/main.js"></script>
+
+    <script>
+      $(function() {
+        $( "#datepicker" ).datepicker();
+      });
+    </script>
   </head> 
 
   <body onLoad="init()">
@@ -28,7 +36,7 @@
     <div id="content">  
     <h2>#WeLoveData Challenge - What is your birthday spacecraft?</h2>
     <p>Did something get shot into space on your birthday? If not, what comes close?</p>
-    <input/>
+    <input type="text" id="datepicker" />
     <svg id="map"></svg>      
     </div>
   </body>

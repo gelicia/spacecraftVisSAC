@@ -34,6 +34,10 @@ margin: 0;
 padding: 5px 20px; 
 }
 
+input {
+	margin-left: 20px;
+}
+
 #left {
 position: absolute;
 left: 0;

@@ -86,7 +86,7 @@ function drawMap(){
 			.enter().append("svg:circle") 
 			.attr({
 				"transform" : function(d) {return "translate(" + proj([d[1],d[0]]) + ")";},
-				"r" : function(d) { return 3; },
+				"r" : function(d) { return 4; },
 				fill : '#3D89C4',
 				stroke : "#000000",
 				"id" : function(d) { return d.location; }
