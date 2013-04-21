@@ -87,12 +87,14 @@ function writeSpaceInfoOut(date, data){
 
 			var match = _.where(countries, {location: data.launchInfo[i].LaunchLoc});
 			var circleMatch = d3.select("#x" + match[0].latitude.toString().replace(noPer, "x") + "x" + match[0].longitude.toString().replace(noPer, "x"))
-			.transition()
+			.moveToFront();
+
+			circleMatch.transition()
 			.duration(1000)
 			.ease("linear")
 			.attr({
 				fill : "yellow"
-			}).moveToFront();
+			});
 		}
 	}
 }
