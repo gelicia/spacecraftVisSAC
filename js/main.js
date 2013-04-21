@@ -47,23 +47,6 @@ function drawMap(){
 		});
 	});
 
-	d3.csv("data/locations.csv", function(collection) {
-		map.selectAll("circle")
-		.data(collection)
-		.enter().append("svg:circle") 
-		.attr({
-			//"cy" : 100,
-			//"cx" : 200,projection([d.lon, d.lat])[0]
-			//"cy": function(d) { return mapHeight -proj([d.longitude, d.latitude])[0]; },
-			//"cx": function(d) { return proj([d.longitude, d.latitude])[1]; },
-			"transform" : function(d) {return "translate(" + proj([d.latitude,d.longitude]) + ")";},
-			"r" : function(d) { return 3; },
-			fill : '#3D89C4',
-			stroke : "#000000",
-			"id" : function(d) { return d.location; }
-		}).moveToFront();
-	});
-
 	var countriesDS = new Miso.Dataset({
 		url: "data/locations.csv",
 		delimiter: ","
@@ -74,22 +57,39 @@ function drawMap(){
 	_.when(countriesDS.fetch({
 		success: function(){
 			this.each(function(row){
-				countries.push(row.modernCountryCode);
+				var countryInfo = {};
+				countryInfo.modernCountryCode = row.modernCountryCode;
+				countryInfo.longitude = row.longitude;
+				countryInfo.latitude = row.latitude;
+				countries.push(countryInfo);
 			});
 		}
 	})).then(function(){
-			countries = _.uniq(countries);
-			console.log(countries);
-			for (var i = 0; i < countries.length; i++) {
-				d3.select("#" + countries[i])
+			//the shorthand doesn't work
+			var uniqCC = _.uniq(_.pluck(countries, 'modernCountryCode'));
+
+			//I'm so sorry.
+			var uniqLongLat = _.uniq(countries.map(function(d){return [d.longitude, d.latitude];}), function(d){return d[0]+" " + d[1];});
+
+			for (var i = 0; i < uniqCC.length; i++) {
+				d3.select("#" + uniqCC[i])
 				.transition()
 				.duration(1000)
 				.ease("linear")
 				.attr({
 					fill: '#666666'
 				});
-		}
+			}
+
+			map.selectAll("circle")
+			.data(uniqLongLat)
+			.enter().append("svg:circle") 
+			.attr({
+				"transform" : function(d) {return "translate(" + proj([d[1],d[0]]) + ")";},
+				"r" : function(d) { return 3; },
+				fill : '#3D89C4',
+				stroke : "#000000",
+				"id" : function(d) { return d.location; }
+			});
 	});
-
-
 }
