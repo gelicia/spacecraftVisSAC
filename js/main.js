@@ -41,7 +41,6 @@ function datePickerChanged(){
 }
 
 function writeSpaceInfoOut(date, data){
-	//console.log(data);
 
 	var container = d3.selectAll("#birthdayInfo");
 	container.selectAll("*").remove();
@@ -59,12 +58,9 @@ function writeSpaceInfoOut(date, data){
 
 		container.append("h3")
 			.text("You don't have a birthday spacecraft, but the closest was launched " + data.difference + " day" + plural + priority + " your birthday!");
-		
-		console.log(data);
 
 		for (var i = 0; i < data.launchInfo.length; i++) {
-
-
+			//print info
 			container.append("p")
 				.text(
 					data.launchInfo[i].Name + " (" + data.launchInfo[i].NSSDC +  ") was launched from " + 
@@ -75,6 +71,18 @@ function writeSpaceInfoOut(date, data){
 					"href" : "http://nssdc.gsfc.nasa.gov" + data.launchInfo[i].URL 
 				})
 				.text("(More Info)");
+		
+			//highlight launch site
+			var map = d3.select("#map");
+
+			map.selectAll("circle")
+				.attr({
+					"fill" : "#3D89C4"
+				});
+
+
+			//var match = _.where(countries, {location: data.launchInfo[i].LaunchLoc, country: data.launchInfo[i].LaunchCountry});
+			//console.log(match);
 		}
 	}
 }
