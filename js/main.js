@@ -1,3 +1,9 @@
+/*
+click to show list of launches from that location
+find date closest to person's birthday
+show data from that launch
+*/
+
 d3.selection.prototype.moveToFront = function() {
 	return this.each(function() {
 		this.parentNode.appendChild(this);
@@ -16,6 +22,17 @@ function loadDataset(){
 	deferred.resolve();
 	return deferred.promise();
 }
+
+function getLocationFromCoord(long, lat){
+	var match = _.where(countries, {longitude: long, latitude: lat});
+	var locOut = match[0].location;
+
+	locOut =  locOut + " (" + _.pluck(match, 'country').toString() + ")";
+	console.log(locOut);
+	return locOut;
+}
+
+var countries = [];
 
 function drawMap(){
 	var mapWidth = 960;
@@ -51,8 +68,6 @@ function drawMap(){
 		url: "data/locations.csv",
 		delimiter: ","
 	});
-
-	var countries = [];
 	
 	_.when(countriesDS.fetch({
 		success: function(){
@@ -61,6 +76,8 @@ function drawMap(){
 				countryInfo.modernCountryCode = row.modernCountryCode;
 				countryInfo.longitude = row.longitude;
 				countryInfo.latitude = row.latitude;
+				countryInfo.location = row.location;
+				countryInfo.country = row.country;
 				countries.push(countryInfo);
 			});
 		}
@@ -89,7 +106,8 @@ function drawMap(){
 				"r" : function(d) { return 4; },
 				fill : '#3D89C4',
 				stroke : "#000000",
-				"id" : function(d) { return d.location; }
+				"id" : function(d) { return d[1] + "x" + d[0] ; },
+				"title" : function(d) { return getLocationFromCoord(d[0],d[1]) ; }
 			});
 	});
 }
