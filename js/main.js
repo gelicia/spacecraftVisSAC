@@ -12,6 +12,8 @@ d3.selection.prototype.moveToFront = function() {
 var countries = [];
 //initialize this once so we don't have to build it every time
 var dates = [];
+//this is to remove periods, which we need to do for IDs
+var noPer = /[\s\.]/g;
 
 function init(){
 	var buildDatePromise = buildDateList();
@@ -58,7 +60,9 @@ function writeSpaceInfoOut(date, data){
 
 		container.append("h3")
 			.text("You don't have a birthday spacecraft, but the closest was launched " + data.difference + " day" + plural + priority + " your birthday!");
+	}
 
+	if (data.difference < 365) {
 		for (var i = 0; i < data.launchInfo.length; i++) {
 			//print info
 			container.append("p")
@@ -81,8 +85,14 @@ function writeSpaceInfoOut(date, data){
 				});
 
 
-			//var match = _.where(countries, {location: data.launchInfo[i].LaunchLoc, country: data.launchInfo[i].LaunchCountry});
-			//console.log(match);
+			var match = _.where(countries, {location: data.launchInfo[i].LaunchLoc});
+			var circleMatch = d3.select("#x" + match[0].latitude.toString().replace(noPer, "x") + "x" + match[0].longitude.toString().replace(noPer, "x"))
+			.transition()
+			.duration(1000)
+			.ease("linear")
+			.attr({
+				fill : "yellow"
+			}).moveToFront();
 		}
 	}
 }
@@ -282,7 +292,12 @@ function drawMapAndPoints(){
 						"r" : function(d) { return 4; },
 						fill : '#3D89C4',
 						stroke : "#000000",
-						"id" : function(d) { return d[1] + "x" + d[0] ; },
+						//ids cannot start with a number, and cannot have periods
+						"id" : function(d) { 
+							if (d[1] !== null && d[0] !== null){
+								return "x" + d[1].toString().replace(noPer, "x") + "x" + d[0].toString().replace(noPer, "x") ; 
+							}
+						},
 						"title" : function(d) { return getLocationFromCoord(d[0],d[1]) ; }
 					});
 			});
