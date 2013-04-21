@@ -22,7 +22,7 @@
 
     <script>
       $(function() {
-        $( "#datepicker" ).datepicker();
+        $("#datepicker").datepicker();
       });
 
       $(function() {
@@ -38,11 +38,12 @@
     <div id="right"></div>
 
     <div id="content">  
-    <h2>#WeLoveData Challenge - What is your birthday spacecraft?</h2>
-    <p>Did something get shot into space on your birthday? If not, what comes close?</p>
-    <input type="text" id="datepicker" />
-    <svg id="map"></svg>     
-
+      <h2>#WeLoveData Challenge - What is your birthday spacecraft?</h2>
+      <p>Did something get shot into space on your birthday? If not, what comes close?</p>
+      <div id="birthdayInfo"></div>
+      <input type="text" id="datepicker" onchange="datePickerChanged();" />
+      <svg id="map"></svg>     
+      <div id="mapLocClick"></div>
     </div>
   </body>
 </html>
