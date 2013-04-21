@@ -69,8 +69,12 @@ function writeSpaceInfoOut(date, data){
 				.text(
 					data.launchInfo[i].Name + " (" + data.launchInfo[i].NSSDC +  ") was launched from " + 
 					data.launchInfo[i].LaunchLoc + ", " + data.launchInfo[i].LaunchCountry +
-					" on " + data.launchInfo[i].LaunchDate
-					);
+					" on " + data.launchInfo[i].LaunchDate  + " "
+					).append("a")
+				.attr({
+					"href" : "http://nssdc.gsfc.nasa.gov" + data.launchInfo[i].URL 
+				})
+				.text("(More Info)");
 		}
 	}
 }
