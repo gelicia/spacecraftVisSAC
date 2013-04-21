@@ -16,19 +16,29 @@ function init(){
 		function(){
 			drawMapAndPoints();
 
-			var launchByDatePromise = returnLaunchInfoByDate(19571004);
+			/*var launchByDatePromise = returnLaunchInfoByDate(19571004);
 			launchByDatePromise.done(
 				function(result){
 					console.log(result);
 				}
-			);
+			);*/
 		}
 	);
 }
 
 function datePickerChanged(){
-	var dateIn = $('input[id=datepicker]').val();
-	
+	var dateIn = new Date($('input[id=datepicker]').val());
+	//getMonth is zero based, life is not
+	var month = dateIn.getMonth() + 1;
+	month = month.toString().length == 1 ? '0' + month.toString() : month.toString();
+	var day = dateIn.getDate().toString().length == 1 ? '0' + dateIn.getDate().toString() : dateIn.getDate().toString();
+
+	var launchByDatePromise = returnLaunchInfoByDate(Number(dateIn.getFullYear().toString() + month + day));
+	launchByDatePromise.done(
+		function(result){
+			console.log(result);
+		}
+	);
 }
 
 //dateIn needs to be YYYYMMDD
