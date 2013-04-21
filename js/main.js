@@ -29,15 +29,58 @@ function datePickerChanged(){
 	month = month.toString().length == 1 ? '0' + month.toString() : month.toString();
 	var day = dateIn.getDate().toString().length == 1 ? '0' + dateIn.getDate().toString() : dateIn.getDate().toString();
 
-	console.log(returnLaunchInfoByBirthday(Number(dateIn.getFullYear().toString() + month + day)));
+	var mathDate = Number(dateIn.getFullYear().toString() + month + day);
 
+	var launchBirthdayPromise = returnLaunchInfoByBirthday(mathDate);
+		launchBirthdayPromise.done(
+			function(result){
+				writeSpaceInfoOut(mathDate, result);
+			}
+		);
+
+}
+
+function writeSpaceInfoOut(date, data){
+	//console.log(data);
+
+	var container = d3.selectAll("#birthdayInfo");
+	container.selectAll("*").remove();
+
+	if (data.difference === 0){
+		container.append("h3")
+			.text("You have a birthday spacecraft!");
+	}
+	else if (data.difference < 365) {
+		var priority = "before";
+		if (date < data.date){
+			priority = "after";
+		}
+		var plural = data.difference > 1 ? "s " : " ";
+
+		container.append("h3")
+			.text("You don't have a birthday spacecraft, but the closest was launched " + data.difference + " day" + plural + priority + " your birthday!");
+		
+		console.log(data);
+
+		for (var i = 0; i < data.launchInfo.length; i++) {
+
+
+			container.append("p")
+				.text(
+					data.launchInfo[i].Name + " (" + data.launchInfo[i].NSSDC +  ") was launched from " + 
+					data.launchInfo[i].LaunchLoc + ", " + data.launchInfo[i].LaunchCountry +
+					" on " + data.launchInfo[i].LaunchDate
+					);
+		}
+	}
 }
 
 //birthday needs to be YYYYMMDD
 //this quick searches through the loop for a match, finds the closest
 //will return launch data
-//and optionally a daysDifference number
 function returnLaunchInfoByBirthday(birthday){
+	var def = $.Deferred();
+
 	var minDate = Math.min.apply(null, dates);
 	var maxDate = Math.max.apply(null, dates);
 	var closestDate;
@@ -62,16 +105,24 @@ function returnLaunchInfoByBirthday(birthday){
 				}
 			}
 		}
+	}
 
+	//we don't want to do this search unless the difference isn't ridiculous
+	if (result.difference < 365){
 		//date is setup with diff above, get whatever the closest was
 		var launchByDatePromise = returnLaunchInfoByDate(result.date);
 		launchByDatePromise.done(
 			function(resultIn){
 				result.launchInfo = resultIn;
+				def.resolve(result);
 			}
 		);
 	}
-	return result;
+	else {
+		def.resolve(result);
+	}
+
+	return def.promise();
 }
 
 //dateIn needs to be YYYYMMDD

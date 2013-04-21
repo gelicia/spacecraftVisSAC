@@ -23,9 +23,16 @@ margin:0px
 }
 
 h2 {
-font-size:16px;
+font-size:18px;
 padding-top:10px;
 color: #0091FF;
+background-color: transparent;
+}
+
+h3 {
+font-size:14px;
+padding-top:10px;
+color: #229FFF;
 background-color: transparent;
 }
 
