@@ -22,11 +22,18 @@
 
     <script>
       $(function() {
-        $("#datepicker").datepicker();
+        $("#datepicker").datepicker({
+          changeMonth: true,
+          changeYear: true
+        });
       });
 
       $(function() {
         $( document ).tooltip();
+      });
+
+      $(document).ready(function() {
+        $('#datepicker').on('keyup', datePickerChanged);
       });
     </script>
   </head> 

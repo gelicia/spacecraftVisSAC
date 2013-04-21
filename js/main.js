@@ -1,6 +1,5 @@
 /*
 click to show list of launches from that location
-find date closest to person's birthday
 show data from that launch
 */
 
@@ -10,18 +9,15 @@ d3.selection.prototype.moveToFront = function() {
 	});
 }; 
 
+var countries = [];
+//initialize this once so we don't have to build it every time
+var dates = [];
+
 function init(){
 	var buildDatePromise = buildDateList();
 	buildDatePromise.done(
 		function(){
 			drawMapAndPoints();
-
-			/*var launchByDatePromise = returnLaunchInfoByDate(19571004);
-			launchByDatePromise.done(
-				function(result){
-					console.log(result);
-				}
-			);*/
 		}
 	);
 }
@@ -33,15 +29,53 @@ function datePickerChanged(){
 	month = month.toString().length == 1 ? '0' + month.toString() : month.toString();
 	var day = dateIn.getDate().toString().length == 1 ? '0' + dateIn.getDate().toString() : dateIn.getDate().toString();
 
-	var launchByDatePromise = returnLaunchInfoByDate(Number(dateIn.getFullYear().toString() + month + day));
-	launchByDatePromise.done(
-		function(result){
-			console.log(result);
+	console.log(returnLaunchInfoByBirthday(Number(dateIn.getFullYear().toString() + month + day)));
+
+}
+
+//birthday needs to be YYYYMMDD
+//this quick searches through the loop for a match, finds the closest
+//will return launch data
+//and optionally a daysDifference number
+function returnLaunchInfoByBirthday(birthday){
+	var minDate = Math.min.apply(null, dates);
+	var maxDate = Math.max.apply(null, dates);
+	var closestDate;
+	var result = {date: 0, difference: 365};
+	if (birthday < minDate){
+		result.date = minDate;
+		result.difference = Math.abs(minDate - birthday);
+	}
+	else if (birthday > maxDate){
+		result.date = maxDate;
+		result.difference = Math.abs(maxDate - birthday);
+	}
+	else {
+		for (var i = 0; i < dates.length; i++) {
+			var diff = Math.abs(dates[i] - birthday);
+			if (diff < result.difference){
+				result.date = dates[i];
+				result.difference = diff;
+
+				if (diff===0){ //if you find an exact match, stop looking
+					break;
+				}
+			}
 		}
-	);
+
+		//date is setup with diff above, get whatever the closest was
+		var launchByDatePromise = returnLaunchInfoByDate(result.date);
+		launchByDatePromise.done(
+			function(resultIn){
+				result.launchInfo = resultIn;
+			}
+		);
+	}
+	return result;
 }
 
 //dateIn needs to be YYYYMMDD
+//this assumes that the dateIn will have launch info
 function returnLaunchInfoByDate(dateIn){
 	var def = $.Deferred();
 	var launchInfoOut = [];
@@ -65,6 +99,13 @@ function returnLaunchInfoByDate(dateIn){
 	});
 
 	return def.promise();
+}
+
+function getLocationFromCoord(long, lat){
+	var match = _.where(countries, {longitude: long, latitude: lat});
+	var locOut = match[0].location;
+	locOut =  locOut + " (" + _.pluck(match, 'country').toString() + ")";
+	return locOut;
 }
 
 function buildDateList(){
@@ -91,34 +132,6 @@ function buildDateList(){
 
 	return def.promise();
 }
-
-//birthday needs to be YYYYMMDD
-function returnLaunchInfoByBirthday(birthday){
-	var minDate = Math.min.apply(null, dates);
-	var maxDate = Math.max.apply(null, dates);
-
-	if (birthday < minDate){
-		return returnLaunchInfoByDate(minDate);
-	}
-	else if (birthday > maxDate){
-		return returnLaunchInfoByDate(maxDate);
-	}
-	else {
-
-	}
-}
-
-function getLocationFromCoord(long, lat){
-	var match = _.where(countries, {longitude: long, latitude: lat});
-	var locOut = match[0].location;
-	locOut =  locOut + " (" + _.pluck(match, 'country').toString() + ")";
-	return locOut;
-}
-
-var countries = [];
-//initialize this once so we don't have to build it every time
-var dates = [];
-
 
 //just drawing the map with geojson
 function drawMap(map, path){
