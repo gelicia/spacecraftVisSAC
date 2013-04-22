@@ -1,6 +1,5 @@
 /*
-click to show list of launches from that location
-show data from that launch
+click to show list of launches from that location 
 */
 
 d3.selection.prototype.moveToFront = function() {
@@ -65,11 +64,14 @@ function writeSpaceInfoOut(date, data){
 	if (data.difference < 365) {
 		for (var i = 0; i < data.launchInfo.length; i++) {
 			//print info
+			var launchDate = data.launchInfo[i].LaunchDate;
+			var dateStr = launchDate.substring(5, 7) + "/" + launchDate.substring(8, 10) + "/" + launchDate.substring(0, 4);
+
 			container.append("p")
 				.text(
 					data.launchInfo[i].Name + " (" + data.launchInfo[i].NSSDC +  ") was launched from " + 
 					data.launchInfo[i].LaunchLoc + ", " + data.launchInfo[i].LaunchCountry +
-					" on " + data.launchInfo[i].LaunchDate  + " "
+					" on " + dateStr  + " "
 					).append("a")
 				.attr({
 					"href" : "http://nssdc.gsfc.nasa.gov" + data.launchInfo[i].URL 
@@ -86,15 +88,18 @@ function writeSpaceInfoOut(date, data){
 
 
 			var match = _.where(countries, {location: data.launchInfo[i].LaunchLoc});
-			var circleMatch = d3.select("#x" + match[0].latitude.toString().replace(noPer, "x") + "x" + match[0].longitude.toString().replace(noPer, "x"))
-			.moveToFront();
 
-			circleMatch.transition()
-			.duration(1000)
-			.ease("linear")
-			.attr({
-				fill : "yellow"
-			});
+			if (match[0].latitude !== null){
+				var circleMatch = d3.select("#x" + match[0].latitude.toString().replace(noPer, "x") + "x" + match[0].longitude.toString().replace(noPer, "x"))
+				.moveToFront();
+
+				circleMatch.transition()
+				.duration(1000)
+				.ease("linear")
+				.attr({
+					fill : "yellow"
+				});
+			}
 		}
 	}
 }
