@@ -286,9 +286,12 @@ function drawMapAndPoints(){
 						});
 					}
 
-					map.selectAll("circle")
+					var circlesAppend = map.selectAll("circle")
 					.data(uniqLongLat)
-					.enter().append("svg:circle") 
+					.enter();
+
+					circlesAppend.append("svg:circle")
+					.filter(function(d){ return d[1] !== null; })
 					.attr({
 						"transform" : function(d) {return "translate(" + proj([d[1],d[0]]) + ")";},
 						"r" : function(d) { return 4; },
